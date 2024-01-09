@@ -1,0 +1,40 @@
+package handler
+
+import (
+	"forum/internal/models"
+	"log"
+	"net/http"
+)
+
+func (h *Handler) myPost(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		h.ErrorPage(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	userValue := r.Context().Value("user")
+	if userValue == nil {
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		return
+	}
+
+	user, ok := userValue.(models.User)
+	if !ok {
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		return
+	}
+	posts, err := h.Service.GetMyPost(user.Id)
+	if err != nil {
+		h.ErrorPage(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	info := models.InfoPosts{
+		User:     user,
+		Posts:    posts,
+		Category: nil,
+	}
+
+	if err := h.Temp.ExecuteTemplate(w, "myPost.html", info); err != nil {
+		log.Println(err.Error())
+		h.ErrorPage(w, err.Error(), http.StatusInternalServerError)
+	}
+}
