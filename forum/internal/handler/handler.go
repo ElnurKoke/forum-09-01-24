@@ -4,6 +4,7 @@ import (
 	"forum/internal/service"
 	"html/template"
 	"net/http"
+	"path/filepath"
 )
 
 type Handler struct {
@@ -36,6 +37,33 @@ func (h *Handler) InitRoutes() {
 
 	h.Mux.HandleFunc("/logout", h.logOut)
 
-	fileServer := http.FileServer(http.Dir("./front/static/"))
+	fileServer := http.FileServer(neuteredFileSystem{http.Dir("./front/static/")})
+	h.Mux.Handle("/static", http.NotFoundHandler())
 	h.Mux.Handle("/static/", http.StripPrefix("/static", fileServer))
+}
+
+type neuteredFileSystem struct {
+	fs http.FileSystem
+}
+
+func (nfs neuteredFileSystem) Open(path string) (http.File, error) {
+	f, err := nfs.fs.Open(path)
+	if err != nil {
+		return nil, err
+	}
+
+	s, err := f.Stat()
+	if s.IsDir() {
+		index := filepath.Join(path, "index.html")
+		if _, err := nfs.fs.Open(index); err != nil {
+			closeErr := f.Close()
+			if closeErr != nil {
+				return nil, closeErr
+			}
+
+			return nil, err
+		}
+	}
+
+	return f, nil
 }

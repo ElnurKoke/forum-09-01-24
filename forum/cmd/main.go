@@ -9,9 +9,9 @@ import (
 )
 
 func main() {
-	database := storage.InitDB()
-	storages := storage.NewStorage(database)
-	services := service.NewService(storages)
+	db := storage.InitDB()
+	store := storage.NewStorage(db)
+	services := service.NewService(store)
 	handlers := handler.NewHandler(services)
 	handlers.InitRoutes()
 	log.Println("Running a web server on http://localhost:8080")

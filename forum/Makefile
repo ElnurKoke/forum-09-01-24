@@ -3,25 +3,25 @@
 run:
 	go run ./cmd/main.go
 
-docBuild:
+dBuild:
 	docker build -t forum .
 
-docrun: docBuild
+dRun: docBuild
 	docker run -it -p 8080:8080 forum
 
-docDelete:
-	docker rmi forum
-
-docClear: docDelete
-	docker system prune -a
-
-1:
-	docker image build -f Dockerfile -t forum .
-2:
+dORun: docBuild
 	docker run -p 8081:8080 forum
-3:
+
+dShow:
+	docker images
+dStop:
 	docker stop $$(docker ps -a -q)
-4:
+
+dDelete:
 	docker rm $$(docker ps -a -q)
-5:  
+
+dDeleteImages:  
 	docker rmi $$(docker images -q)
+
+dClearAll:
+	docker system prune -a

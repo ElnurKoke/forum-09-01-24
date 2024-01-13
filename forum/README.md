@@ -1,5 +1,19 @@
 ## forum 
 
+### Run Locally with makefile:
+```
+make run
+```
+And go to the web page: http://localhost:4000 
+### Run docker:
+```
+docker build -t forum .
+docker run -it -p 8080:8080 forum
+make dStop
+make dDelete
+make dDeleteImages
+```
+
 ### Objectives
 
 This project consists in creating a web forum that allows :
