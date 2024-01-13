@@ -125,7 +125,7 @@ func (h *Handler) postPage(w http.ResponseWriter, r *http.Request) {
 		commentText := r.FormValue("text")
 
 		if commentText == "" {
-			h.ErrorPage(w, "comment field not found", http.StatusBadRequest)
+			h.ErrorPage(w, "comment field not found (empty comment)", http.StatusBadRequest)
 
 			return
 		}

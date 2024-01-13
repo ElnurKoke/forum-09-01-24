@@ -13,13 +13,17 @@ func (h *Handler) myLikedPost(w http.ResponseWriter, r *http.Request) {
 	}
 	userValue := r.Context().Value("user")
 	if userValue == nil {
-		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		h.ErrorPage(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 		return
 	}
 
 	user, ok := userValue.(models.User)
 	if !ok {
-		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		h.ErrorPage(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		return
+	}
+	if !user.IsAuth {
+		h.ErrorPage(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 		return
 	}
 	posts, err := h.Service.GetMyLikePost(user.Id)
